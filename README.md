@@ -1,4 +1,4 @@
-# Machine Health Predictor (Predictive Maintenance ML)
+# Machine Health Protector (Predictive Maintenance ML)
 
 An end-to-end Machine Learning web application designed to forecast industrial machinery failures and assess operational health before breakdowns occur. The solution features dimensionality reduction using PCA, feature scaling, classification modeling, and an interactive Streamlit dashboard.
 
