@@ -1,0 +1,15 @@
+project-includes = [
+    "**/*.py*",
+    "**/*.ipynb",
+]
+
+python-interpreter-path = "C:\\Users\\Prem\\antigravity_ml_env\\Scripts\\python.exe"
+
+search-path = [
+    "."
+]
+
+[errors]
+missing-attribute = "ignore"
+no-matching-overload = "ignore"
+untyped-import = "ignore"
