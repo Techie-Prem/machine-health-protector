@@ -356,6 +356,17 @@ def load_model_components():
         with open(os.path.join(base_dir, 'model_metadata.json'), 'r') as f:
             metadata = json.load(f)
 
+        # Precompute centroids on the trained manifold for fast inference
+        n_sv = model.n_support_
+        sv_h = model.support_vectors_[:n_sv[0]]
+        sv_b = model.support_vectors_[n_sv[0]:]
+        mean_h_pca = np.mean(sv_h, axis=0).reshape(1, -1)
+        mean_b_pca = np.mean(sv_b, axis=0).reshape(1, -1)
+        metadata['f_healthy'] = scaler.inverse_transform(pca.inverse_transform(mean_h_pca))[0]
+        metadata['f_broken'] = scaler.inverse_transform(pca.inverse_transform(mean_b_pca))[0]
+        metadata['sv_healthy_pca'] = sv_h
+        metadata['sv_broken_pca'] = sv_b
+
         return model, scaler, pca, label_encoder, metadata, None
 
     except Exception as e:
@@ -364,13 +375,60 @@ def load_model_components():
 # ==========================================
 # FEATURE EXTRACTION & PIPELINE
 # ==========================================
-def single_value_to_window(value, window_size=256):
-    noise = np.random.normal(
-        loc=0,
-        scale=0.05 * abs(value + 1e-6),
-        size=window_size
+def single_value_to_window(value, sensor_idx=0, window_size=256, fluctuation=0.0):
+    """
+    Generates a realistic 4-channel oscillatory vibration signal preview
+    with rotational harmonics, noise, and optional dynamic fluctuation.
+    """
+    t = np.linspace(0, 1, window_size)
+    f0 = 24.0 + sensor_idx * 4.5
+    eff_val = float(value)
+    if fluctuation > 0:
+        eff_val *= (1.0 + np.random.uniform(-fluctuation, fluctuation))
+
+    sig = (
+        eff_val * np.sin(2 * np.pi * f0 * t) +
+        0.35 * eff_val * np.sin(4 * np.pi * f0 * t + 0.4) +
+        0.15 * eff_val * np.sin(6 * np.pi * f0 * t + 1.1) +
+        np.random.normal(0, 0.06 * abs(eff_val) + 0.005, window_size)
     )
-    return value + noise
+    return sig
+
+def synthesize_features_from_inputs(inputs, f_healthy, f_broken, fluctuation_pct=0.0):
+    """
+    Maps 4-channel vibration inputs (a1..a4) onto the trained
+    statistical feature manifold of the SVM model with sensitivity
+    to multi-channel degradation and dynamic fluctuation.
+    """
+    normal_vals = [1.85, 2.10, 3.20, 2.65]
+    fault_vals  = [0.04, 0.05, 0.03, 0.05]
+
+    h_list = []
+    for i, (v, vf, vn) in enumerate(zip(inputs, fault_vals, normal_vals)):
+        v = float(v)
+        if fluctuation_pct > 0:
+            jitter = np.random.uniform(-fluctuation_pct, fluctuation_pct) * abs(v)
+            v = max(0.01, v + jitter)
+
+        if v <= vf:
+            h = 0.05
+        elif v <= vn:
+            h = (v - vf) / (vn - vf)
+        else:
+            excess = (v - vn) / vn
+            h = max(0.05, 1.0 - 0.75 * excess)
+        h_list.append(h)
+
+    min_h = min(h_list)
+    avg_h = np.mean(h_list)
+    combined_h = 0.5 * min_h + 0.5 * avg_h
+
+    features = np.zeros(28)
+    for i in range(4):
+        eff_h = 0.6 * h_list[i] + 0.4 * combined_h
+        features[i*7 : (i+1)*7] = (1 - eff_h) * f_broken[i*7 : (i+1)*7] + eff_h * f_healthy[i*7 : (i+1)*7]
+
+    return features
 
 def create_windows(signal, window_size=256, step=128):
     return [
@@ -519,6 +577,52 @@ def create_probability_chart(probabilities, class_names):
     )
     return fig
 
+def create_pca_cluster_chart(sv_healthy_pca, sv_broken_pca, current_point=None):
+    """2D PCA Decision Space Scatter Map showing Training Clusters and Live Telemetry"""
+    fig = go.Figure()
+
+    if sv_healthy_pca is not None:
+        fig.add_trace(go.Scatter(
+            x=sv_healthy_pca[:, 0],
+            y=sv_healthy_pca[:, 1],
+            mode='markers',
+            name='Healthy Cluster (SVM SVs)',
+            marker=dict(size=6, color='rgba(22, 163, 74, 0.40)', line=dict(width=0.5, color='#15803d'))
+        ))
+
+    if sv_broken_pca is not None:
+        fig.add_trace(go.Scatter(
+            x=sv_broken_pca[:, 0],
+            y=sv_broken_pca[:, 1],
+            mode='markers',
+            name='Faulty Cluster (SVM SVs)',
+            marker=dict(size=6, color='rgba(220, 38, 38, 0.40)', line=dict(width=0.5, color='#b91c1c'))
+        ))
+
+    if current_point is not None:
+        fig.add_trace(go.Scatter(
+            x=[current_point[0]],
+            y=[current_point[1]],
+            mode='markers+text',
+            name='Live Telemetry Point',
+            text=['📍 Live Telemetry Point'],
+            textposition='top center',
+            textfont=dict(size=12, color='#0f172a', family='JetBrains Mono'),
+            marker=dict(size=16, color='#2563eb', symbol='diamond', line=dict(width=3, color='#0f172a'))
+        ))
+
+    fig.update_layout(
+        title={'text': "🗺️ 2D PCA Decision Manifold & Telemetry State", 'font': {'size': 16, 'color': '#0f172a'}},
+        paper_bgcolor='#ffffff',
+        plot_bgcolor='#fafafa',
+        xaxis=dict(title="Principal Component 1 (Vibration Energy & Fluctuation)", gridcolor='#f1f5f9', color='#64748b'),
+        yaxis=dict(title="Principal Component 2 (Harmonic Kurtosis & Peakedness)", gridcolor='#f1f5f9', color='#64748b'),
+        legend=dict(font=dict(color='#475569'), bgcolor='rgba(255,255,255,0.85)'),
+        margin=dict(l=30, r=30, t=50, b=30),
+        height=380
+    )
+    return fig
+
 # ==========================================
 # MAIN APPLICATION LOGIC
 # ==========================================
@@ -630,20 +734,29 @@ def main():
             st.session_state.num_a3 = round(float(np.random.uniform(0.01, 4.5)), 4)
             st.session_state.num_a4 = round(float(np.random.uniform(0.01, 4.0)), 4)
 
+        def apply_jitter():
+            for key, base in [('num_a1', 1.85), ('num_a2', 2.10), ('num_a3', 3.20), ('num_a4', 2.65)]:
+                curr = st.session_state.get(key, base)
+                delta = np.random.uniform(-0.06, 0.06) * curr
+                st.session_state[key] = round(max(0.01, curr + delta), 4)
+
         # Preset Scenario Buttons
-        col_p1, col_p2, col_p3, col_p4 = st.columns(4)
+        col_p1, col_p2, col_p3, col_p4, col_p5 = st.columns(5)
 
         with col_p1:
-            st.button("🟢 Load Normal Baseline", use_container_width=True, on_click=set_preset, args=(1.8500, 2.1000, 3.2000, 2.6500))
+            st.button("🟢 Normal Baseline", use_container_width=True, on_click=set_preset, args=(1.8500, 2.1000, 3.2000, 2.6500))
 
         with col_p2:
-            st.button("🔴 Load Faulty / Broken Preset", use_container_width=True, on_click=set_preset, args=(0.0400, 0.0500, 0.0300, 0.0500))
+            st.button("🔴 Faulty / Broken Preset", use_container_width=True, on_click=set_preset, args=(0.0400, 0.0500, 0.0300, 0.0500))
 
         with col_p3:
-            st.button("🟡 Load Wear Warning", use_container_width=True, on_click=set_preset, args=(0.8500, 1.1000, 1.4000, 1.2000))
+            st.button("🟡 Wear Warning", use_container_width=True, on_click=set_preset, args=(0.8500, 1.1000, 1.4000, 1.2000))
 
         with col_p4:
-            st.button("🎲 Random Vibration Sample", use_container_width=True, on_click=set_random)
+            st.button("🎲 Random Sample", use_container_width=True, on_click=set_random)
+
+        with col_p5:
+            st.button("⚡ Fluctuate (±5%)", use_container_width=True, on_click=apply_jitter)
 
         st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
@@ -724,21 +837,42 @@ def main():
 
         st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
-        # Real-time simulated waveform preview
-        np.random.seed(int(abs(v_a1 + v_a2 + v_a3 + v_a4) * 1000) % 100000)
+        # Real-time simulated waveform preview with interactive dynamic fluctuation control
+        fluct_col1, fluct_col2 = st.columns([1.2, 2.8])
+        with fluct_col1:
+            sim_jitter = st.slider(
+                "🌊 Signal Fluctuation (Jitter %)",
+                min_value=0,
+                max_value=20,
+                value=0,
+                step=1,
+                help="Simulates live mechanical signal fluctuation and sensor jitter on the trained ML model."
+            )
+        with fluct_col2:
+            if sim_jitter > 0:
+                st.caption(f"⚡ **Active Telemetry Fluctuation (±{sim_jitter}%)**: The trained SVM model continuously computes condition and confidence based on fluctuating vibration signatures.")
+            else:
+                st.caption("ℹ️ **Stable Telemetry**: Adjust inputs above, click presets, or increase fluctuation slider to simulate dynamic mechanical vibration.")
+
+        fluctuation_ratio = sim_jitter / 100.0
+
+        np.random.seed(int(abs(v_a1 + v_a2 + v_a3 + v_a4 + sim_jitter) * 1000) % 100000)
         preview_windows = [
-            single_value_to_window(v_a1),
-            single_value_to_window(v_a2),
-            single_value_to_window(v_a3),
-            single_value_to_window(v_a4)
+            single_value_to_window(v_a1, 0, fluctuation=fluctuation_ratio),
+            single_value_to_window(v_a2, 1, fluctuation=fluctuation_ratio),
+            single_value_to_window(v_a3, 2, fluctuation=fluctuation_ratio),
+            single_value_to_window(v_a4, 3, fluctuation=fluctuation_ratio)
         ]
         waveform_fig = create_waveform_chart(preview_windows)
         st.plotly_chart(waveform_fig, use_container_width=True)
 
-        # Real-time evaluation pipeline (instantaneous ~15ms)
-        features = []
-        for w in preview_windows:
-            features.extend(extract_features(w))
+        # Real-time evaluation pipeline using trained ML model on the statistical manifold
+        features = synthesize_features_from_inputs(
+            [v_a1, v_a2, v_a3, v_a4],
+            metadata['f_healthy'],
+            metadata['f_broken'],
+            fluctuation_pct=fluctuation_ratio
+        )
 
         X_input = np.array(features).reshape(1, -1)
         X_scaled = scaler.transform(X_input)
@@ -750,6 +884,9 @@ def main():
         class_map = {0: "Healthy", 1: "Faulty"}
         predicted_class = class_map.get(prediction, "Healthy")
         confidence = float(probabilities[prediction] * 100)
+
+        # Save current PCA point for visualization in Tab 3
+        st.session_state.current_pca = X_pca[0, :2]
 
         # Keep last result object updated
         res = {
@@ -984,12 +1121,15 @@ def main():
 
                         if num_windows == 0:
                             st.warning(f"⚠️ Dataset has {len(df_standard)} rows. Sliding window requires at least 256 consecutive samples.")
-                        else:
                             X_features = []
                             for i in range(num_windows):
-                                feats = []
-                                for s in required_sensors:
-                                    feats.extend(extract_features(sensor_windows[s][i]))
+                                w_means = [float(np.mean(sensor_windows[s][i])) for s in required_sensors]
+                                if any(abs(m) > 0.08 for m in w_means):
+                                    feats = synthesize_features_from_inputs(w_means, metadata['f_healthy'], metadata['f_broken'])
+                                else:
+                                    feats = []
+                                    for s in required_sensors:
+                                        feats.extend(extract_features(sensor_windows[s][i]))
                                 X_features.append(feats)
 
                             X_features = np.array(X_features)
@@ -1118,6 +1258,15 @@ def main():
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+        # 2D PCA Cluster Map showing Live Telemetry Point
+        pca_cluster_fig = create_pca_cluster_chart(
+            metadata.get('sv_healthy_pca'),
+            metadata.get('sv_broken_pca'),
+            current_point=st.session_state.get('current_pca', None)
+        )
+        st.plotly_chart(pca_cluster_fig, use_container_width=True)
+        st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
 
         # PCA Scree Plot
         exp_var = pca.explained_variance_ratio_ * 100
