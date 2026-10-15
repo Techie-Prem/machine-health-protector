@@ -318,14 +318,14 @@ st.markdown("""
 if 'predictions_history' not in st.session_state:
     st.session_state.predictions_history = []
 
-if 'input_a1' not in st.session_state:
-    st.session_state.input_a1 = 1.8500
-if 'input_a2' not in st.session_state:
-    st.session_state.input_a2 = 2.1000
-if 'input_a3' not in st.session_state:
-    st.session_state.input_a3 = 3.2000
-if 'input_a4' not in st.session_state:
-    st.session_state.input_a4 = 2.6500
+if 'num_a1' not in st.session_state:
+    st.session_state.num_a1 = 1.8500
+if 'num_a2' not in st.session_state:
+    st.session_state.num_a2 = 2.1000
+if 'num_a3' not in st.session_state:
+    st.session_state.num_a3 = 3.2000
+if 'num_a4' not in st.session_state:
+    st.session_state.num_a4 = 2.6500
 
 if 'last_result' not in st.session_state:
     st.session_state.last_result = None
@@ -617,40 +617,33 @@ def main():
         st.markdown("### 🎛️ Real-Time Sensor Inputs")
         st.caption("Select a quick operating scenario or adjust the 4 sensor channels to evaluate equipment health.")
 
+        # Preset Scenario Callbacks
+        def set_preset(a1, a2, a3, a4):
+            st.session_state.num_a1 = float(a1)
+            st.session_state.num_a2 = float(a2)
+            st.session_state.num_a3 = float(a3)
+            st.session_state.num_a4 = float(a4)
+
+        def set_random():
+            st.session_state.num_a1 = round(float(np.random.uniform(0.01, 3.5)), 4)
+            st.session_state.num_a2 = round(float(np.random.uniform(0.01, 3.5)), 4)
+            st.session_state.num_a3 = round(float(np.random.uniform(0.01, 4.5)), 4)
+            st.session_state.num_a4 = round(float(np.random.uniform(0.01, 4.0)), 4)
+
         # Preset Scenario Buttons
         col_p1, col_p2, col_p3, col_p4 = st.columns(4)
 
         with col_p1:
-            if st.button("🟢 Load Normal Baseline", use_container_width=True):
-                st.session_state.input_a1 = 1.8500
-                st.session_state.input_a2 = 2.1000
-                st.session_state.input_a3 = 3.2000
-                st.session_state.input_a4 = 2.6500
-                st.rerun()
+            st.button("🟢 Load Normal Baseline", use_container_width=True, on_click=set_preset, args=(1.8500, 2.1000, 3.2000, 2.6500))
 
         with col_p2:
-            if st.button("🔴 Load Faulty / Broken Preset", use_container_width=True):
-                st.session_state.input_a1 = 0.0400
-                st.session_state.input_a2 = 0.0500
-                st.session_state.input_a3 = 0.0300
-                st.session_state.input_a4 = 0.0500
-                st.rerun()
+            st.button("🔴 Load Faulty / Broken Preset", use_container_width=True, on_click=set_preset, args=(0.0400, 0.0500, 0.0300, 0.0500))
 
         with col_p3:
-            if st.button("🟡 Load Wear Warning", use_container_width=True):
-                st.session_state.input_a1 = 0.8500
-                st.session_state.input_a2 = 1.1000
-                st.session_state.input_a3 = 1.4000
-                st.session_state.input_a4 = 1.2000
-                st.rerun()
+            st.button("🟡 Load Wear Warning", use_container_width=True, on_click=set_preset, args=(0.8500, 1.1000, 1.4000, 1.2000))
 
         with col_p4:
-            if st.button("🎲 Random Vibration Sample", use_container_width=True):
-                st.session_state.input_a1 = round(float(np.random.uniform(0.01, 3.5)), 4)
-                st.session_state.input_a2 = round(float(np.random.uniform(0.01, 3.5)), 4)
-                st.session_state.input_a3 = round(float(np.random.uniform(0.01, 4.5)), 4)
-                st.session_state.input_a4 = round(float(np.random.uniform(0.01, 4.0)), 4)
-                st.rerun()
+            st.button("🎲 Random Vibration Sample", use_container_width=True, on_click=set_random)
 
         st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
@@ -667,13 +660,11 @@ def main():
             """, unsafe_allow_html=True)
             v_a1 = st.number_input(
                 "Vibration X (mm/s)",
-                value=float(st.session_state.input_a1),
                 step=0.05,
                 format="%.4f",
                 key="num_a1",
                 label_visibility="collapsed"
             )
-            st.session_state.input_a1 = v_a1
             st.caption("Axis: Radial Horizontal")
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -687,13 +678,11 @@ def main():
             """, unsafe_allow_html=True)
             v_a2 = st.number_input(
                 "Vibration Y (mm/s)",
-                value=float(st.session_state.input_a2),
                 step=0.05,
                 format="%.4f",
                 key="num_a2",
                 label_visibility="collapsed"
             )
-            st.session_state.input_a2 = v_a2
             st.caption("Axis: Radial Vertical")
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -707,13 +696,11 @@ def main():
             """, unsafe_allow_html=True)
             v_a3 = st.number_input(
                 "Gearbox (mm/s)",
-                value=float(st.session_state.input_a3),
                 step=0.05,
                 format="%.4f",
                 key="num_a3",
                 label_visibility="collapsed"
             )
-            st.session_state.input_a3 = v_a3
             st.caption("Axis: Gear Mesh Axial")
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -727,13 +714,11 @@ def main():
             """, unsafe_allow_html=True)
             v_a4 = st.number_input(
                 "Bearing (mm/s)",
-                value=float(st.session_state.input_a4),
                 step=0.05,
                 format="%.4f",
                 key="num_a4",
                 label_visibility="collapsed"
             )
-            st.session_state.input_a4 = v_a4
             st.caption("Axis: Bearing Outer Race")
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -750,160 +735,153 @@ def main():
         waveform_fig = create_waveform_chart(preview_windows)
         st.plotly_chart(waveform_fig, use_container_width=True)
 
-        # Action Button
+        # Real-time evaluation pipeline (instantaneous ~15ms)
+        features = []
+        for w in preview_windows:
+            features.extend(extract_features(w))
+
+        X_input = np.array(features).reshape(1, -1)
+        X_scaled = scaler.transform(X_input)
+        X_pca = pca.transform(X_scaled)
+
+        prediction = int(model.predict(X_pca)[0])
+        probabilities = model.predict_proba(X_pca)[0]
+
+        class_map = {0: "Healthy", 1: "Faulty"}
+        predicted_class = class_map.get(prediction, "Healthy")
+        confidence = float(probabilities[prediction] * 100)
+
+        # Keep last result object updated
+        res = {
+            'class': predicted_class,
+            'confidence': confidence,
+            'probabilities': probabilities,
+            'inputs': [v_a1, v_a2, v_a3, v_a4],
+            'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        st.session_state.last_result = res
+
+        # Action Button to manually log inference to session telemetry
         btn_col1, btn_col2, btn_col3 = st.columns([1, 1.8, 1])
         with btn_col2:
-            run_predict = st.button("🚀 EXECUTE AI HEALTH DIAGNOSTIC", type="primary", use_container_width=True)
+            log_btn = st.button("🚀 LOG TO TELEMETRY AUDIT HISTORY", type="primary", use_container_width=True)
 
-        # Run Prediction Pipeline
-        if run_predict:
-            with st.spinner("Processing 28 statistical features through PCA & SVM pipeline..."):
-                features = []
-                for w in preview_windows:
-                    features.extend(extract_features(w))
+        if log_btn:
+            st.session_state.predictions_history.append({
+                'timestamp': res['timestamp'],
+                'predicted_class': predicted_class,
+                'confidence': confidence,
+                'mode': 'Single',
+                'a1': v_a1,
+                'a2': v_a2,
+                'a3': v_a3,
+                'a4': v_a4
+            })
+            st.toast("✅ Diagnostic logged to session audit history!", icon="📋")
 
-                X_input = np.array(features).reshape(1, -1)
-                X_scaled = scaler.transform(X_input)
-                X_pca = pca.transform(X_scaled)
+        st.markdown("---")
+        st.markdown("### 📋 Diagnostic Assessment Report")
 
-                prediction = int(model.predict(X_pca)[0])
-                probabilities = model.predict_proba(X_pca)[0]
+        if predicted_class == "Healthy":
+            st.markdown(f"""
+            <div class="result-banner-healthy">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <span style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.82rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;">● NOMINAL OPERATION</span>
+                        <h2 style="margin: 6px 0 2px 0; color: #15803d !important; font-size: 1.75rem;">Equipment Condition: HEALTHY</h2>
+                        <p style="margin: 0; color: #166534; font-size: 0.95rem;">All 4 vibration channels match normal mechanical baseline parameters. Vibration is within ISO 10816 standards.</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.82rem; color: #166534; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">DIAGNOSTIC CONFIDENCE</div>
+                        <div style="font-size: 2.2rem; font-weight: 800; color: #15803d; font-family: 'JetBrains Mono';">{confidence:.1f}%</div>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+            <div class="result-banner-faulty">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <span style="background: #fee2e2; color: #991b1b; font-weight: 700; font-size: 0.82rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;">🚨 ANOMALY DETECTED</span>
+                        <h2 style="margin: 6px 0 2px 0; color: #b91c1c !important; font-size: 1.75rem;">Equipment Condition: FAULTY / BROKEN</h2>
+                        <p style="margin: 0; color: #991b1b; font-size: 0.95rem;">Vibration characteristics deviate significantly from standard profiles. Indicative of mechanical looseness, gear tooth pitting, or bearing raceway defect.</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.82rem; color: #991b1b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">FAULT PROBABILITY</div>
+                        <div style="font-size: 2.2rem; font-weight: 800; color: #b91c1c; font-family: 'JetBrains Mono';">{confidence:.1f}%</div>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
-                class_map = {0: "Healthy", 1: "Faulty"}
-                predicted_class = class_map.get(prediction, "Healthy")
-                confidence = float(probabilities[prediction] * 100)
+        # Metrics & Visuals
+        g_col1, g_col2 = st.columns([1, 1])
 
-                # Save result
-                st.session_state.last_result = {
-                    'class': predicted_class,
-                    'confidence': confidence,
-                    'probabilities': probabilities,
-                    'inputs': [v_a1, v_a2, v_a3, v_a4],
-                    'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                }
+        with g_col1:
+            gauge_fig = create_gauge_chart(
+                confidence,
+                f"Confidence: {predicted_class}",
+                is_faulty=(predicted_class == "Faulty")
+            )
+            st.plotly_chart(gauge_fig, use_container_width=True)
 
-                # Save history
-                st.session_state.predictions_history.append({
-                    'timestamp': st.session_state.last_result['timestamp'],
-                    'predicted_class': predicted_class,
-                    'confidence': confidence,
-                    'mode': 'Single',
-                    'a1': v_a1,
-                    'a2': v_a2,
-                    'a3': v_a3,
-                    'a4': v_a4
-                })
+        with g_col2:
+            prob_fig = create_probability_chart(probabilities, ["Healthy", "Faulty"])
+            st.plotly_chart(prob_fig, use_container_width=True)
 
-        # Display Result if available
-        if st.session_state.last_result:
-            res = st.session_state.last_result
-            predicted_class = res['class']
-            confidence = res['confidence']
-            probabilities = res['probabilities']
+        # Prescriptive Maintenance Actions
+        st.markdown("#### 🛠️ Prescriptive Maintenance Recommendations")
+        act_col1, act_col2 = st.columns(2)
 
-            st.markdown("---")
-            st.markdown("### 📋 Diagnostic Assessment Report")
+        with act_col1:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="margin-top: 0; color: #0f172a !important;">📌 Action Checklist</h4>
+            """, unsafe_allow_html=True)
 
             if predicted_class == "Healthy":
-                st.markdown(f"""
-                <div class="result-banner-healthy">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                        <div>
-                            <span style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.82rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;">● NOMINAL OPERATION</span>
-                            <h2 style="margin: 6px 0 2px 0; color: #15803d !important; font-size: 1.75rem;">Equipment Condition: HEALTHY</h2>
-                            <p style="margin: 0; color: #166534; font-size: 0.95rem;">All 4 vibration channels match normal mechanical baseline parameters. Vibration is within ISO 10816 standards.</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 0.82rem; color: #166534; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">DIAGNOSTIC CONFIDENCE</div>
-                            <div style="font-size: 2.2rem; font-weight: 800; color: #15803d; font-family: 'JetBrains Mono';">{confidence:.1f}%</div>
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown("""
+                - ✅ **Routine Inspection:** Next scheduled preventive check in 30 days.
+                - ✅ **Lubrication:** Verify grease reservoir levels remain nominal.
+                - ✅ **Telemetry Logged:** Baseline sensor readings archived to historical database.
+                """)
             else:
-                st.markdown(f"""
-                <div class="result-banner-faulty">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                        <div>
-                            <span style="background: #fee2e2; color: #991b1b; font-weight: 700; font-size: 0.82rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;">🚨 ANOMALY DETECTED</span>
-                            <h2 style="margin: 6px 0 2px 0; color: #b91c1c !important; font-size: 1.75rem;">Equipment Condition: FAULTY / BROKEN</h2>
-                            <p style="margin: 0; color: #991b1b; font-size: 0.95rem;">Vibration characteristics deviate significantly from standard profiles. Indicative of mechanical looseness, gear tooth pitting, or bearing raceway defect.</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 0.82rem; color: #991b1b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">FAULT PROBABILITY</div>
-                            <div style="font-size: 2.2rem; font-weight: 800; color: #b91c1c; font-family: 'JetBrains Mono';">{confidence:.1f}%</div>
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-            # Metrics & Visuals
-            g_col1, g_col2 = st.columns([1, 1])
-
-            with g_col1:
-                gauge_fig = create_gauge_chart(
-                    confidence,
-                    f"Confidence: {predicted_class}",
-                    is_faulty=(predicted_class == "Faulty")
-                )
-                st.plotly_chart(gauge_fig, use_container_width=True)
-
-            with g_col2:
-                prob_fig = create_probability_chart(probabilities, ["Healthy", "Faulty"])
-                st.plotly_chart(prob_fig, use_container_width=True)
-
-            # Prescriptive Maintenance Actions
-            st.markdown("#### 🛠️ Prescriptive Maintenance Recommendations")
-            act_col1, act_col2 = st.columns(2)
-
-            with act_col1:
                 st.markdown("""
-                <div class="glass-card">
-                    <h4 style="margin-top: 0; color: #0f172a !important;">📌 Action Checklist</h4>
-                """, unsafe_allow_html=True)
+                - ⚠️ **Immediate Work Order:** Dispatch mechanical technician to inspect drivetrain.
+                - ⚠️ **Bearing Check:** Perform acoustic ultrasound inspection on bearing a4.
+                - ⚠️ **Gearbox Alignment:** Verify tooth backlash and gearbox shaft alignment.
+                - ⚠️ **Speed / Load Derate:** Reduce operating load by 25% if vibration exceeds threshold.
+                """)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-                if predicted_class == "Healthy":
-                    st.markdown("""
-                    - ✅ **Routine Inspection:** Next scheduled preventive check in 30 days.
-                    - ✅ **Lubrication:** Verify grease reservoir levels remain nominal.
-                    - ✅ **Telemetry Logged:** Baseline sensor readings archived to historical database.
-                    """)
-                else:
-                    st.markdown("""
-                    - ⚠️ **Immediate Work Order:** Dispatch mechanical technician to inspect drivetrain.
-                    - ⚠️ **Bearing Check:** Perform acoustic ultrasound inspection on bearing a4.
-                    - ⚠️ **Gearbox Alignment:** Verify tooth backlash and gearbox shaft alignment.
-                    - ⚠️ **Speed / Load Derate:** Reduce operating load by 25% if vibration exceeds threshold.
-                    """)
-                st.markdown("</div>", unsafe_allow_html=True)
+        with act_col2:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="margin-top: 0; color: #0f172a !important;">📑 Export Report</h4>
+                <p style="font-size: 0.88rem; color: #64748b;">Generate a timestamped engineering diagnostic report for maintenance ticketing.</p>
+            """, unsafe_allow_html=True)
 
-            with act_col2:
-                st.markdown("""
-                <div class="glass-card">
-                    <h4 style="margin-top: 0; color: #0f172a !important;">📑 Export Report</h4>
-                    <p style="font-size: 0.88rem; color: #64748b;">Generate a timestamped engineering diagnostic report for maintenance ticketing.</p>
-                """, unsafe_allow_html=True)
-
-                report_data = {
-                    "timestamp": res['timestamp'],
-                    "equipment_status": predicted_class,
-                    "confidence": f"{confidence:.2f}%",
-                    "sensor_readings": {
-                        "motor_vibration_x_a1": res['inputs'][0],
-                        "motor_vibration_y_a2": res['inputs'][1],
-                        "gearbox_vibration_a3": res['inputs'][2],
-                        "bearing_vibration_a4": res['inputs'][3]
-                    },
-                    "model_evaluator": metadata.get('model_type', 'SVM (RBF)')
-                }
-                st.download_button(
-                    label="⬇️ Download JSON Diagnostic Log",
-                    data=json.dumps(report_data, indent=4),
-                    file_name=f"diagnostic_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                    mime="application/json",
-                    use_container_width=True
-                )
-                st.markdown("</div>", unsafe_allow_html=True)
+            report_data = {
+                "timestamp": res['timestamp'],
+                "equipment_status": predicted_class,
+                "confidence": f"{confidence:.2f}%",
+                "sensor_readings": {
+                    "motor_vibration_x_a1": res['inputs'][0],
+                    "motor_vibration_y_a2": res['inputs'][1],
+                    "gearbox_vibration_a3": res['inputs'][2],
+                    "bearing_vibration_a4": res['inputs'][3]
+                },
+                "model_evaluator": metadata.get('model_type', 'SVM (RBF)')
+            }
+            st.download_button(
+                label="⬇️ Download JSON Diagnostic Log",
+                data=json.dumps(report_data, indent=4),
+                file_name=f"diagnostic_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                mime="application/json",
+                use_container_width=True
+            )
+            st.markdown("</div>", unsafe_allow_html=True)
 
     # ==========================================
     # TAB 2: BATCH ANALYSIS
