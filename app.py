@@ -356,16 +356,27 @@ def load_model_components():
         with open(os.path.join(base_dir, 'model_metadata.json'), 'r') as f:
             metadata = json.load(f)
 
-        # Precompute centroids on the trained manifold for fast inference
-        n_sv = model.n_support_
-        sv_h = model.support_vectors_[:n_sv[0]]
-        sv_b = model.support_vectors_[n_sv[0]:]
-        mean_h_pca = np.mean(sv_h, axis=0).reshape(1, -1)
-        mean_b_pca = np.mean(sv_b, axis=0).reshape(1, -1)
-        metadata['f_healthy'] = scaler.inverse_transform(pca.inverse_transform(mean_h_pca))[0]
-        metadata['f_broken'] = scaler.inverse_transform(pca.inverse_transform(mean_b_pca))[0]
-        metadata['sv_healthy_pca'] = sv_h
-        metadata['sv_broken_pca'] = sv_b
+        # Precompute or load centroids on the trained manifold for fast inference
+        if hasattr(model, 'n_support_') and hasattr(model, 'support_vectors_'):
+            n_sv = model.n_support_
+            sv_h = model.support_vectors_[:n_sv[0]]
+            sv_b = model.support_vectors_[n_sv[0]:]
+            mean_h_pca = np.mean(sv_h, axis=0).reshape(1, -1)
+            mean_b_pca = np.mean(sv_b, axis=0).reshape(1, -1)
+            metadata['f_healthy'] = scaler.inverse_transform(pca.inverse_transform(mean_h_pca))[0]
+            metadata['f_broken'] = scaler.inverse_transform(pca.inverse_transform(mean_b_pca))[0]
+            metadata['sv_healthy_pca'] = sv_h
+            metadata['sv_broken_pca'] = sv_b
+        elif 'sv_healthy_pca' in metadata and 'sv_broken_pca' in metadata:
+            metadata['sv_healthy_pca'] = np.array(metadata['sv_healthy_pca'])
+            metadata['sv_broken_pca'] = np.array(metadata['sv_broken_pca'])
+            metadata['f_healthy'] = np.array(metadata.get('f_healthy', np.zeros(metadata.get('n_features', 28))))
+            metadata['f_broken'] = np.array(metadata.get('f_broken', np.zeros(metadata.get('n_features', 28))))
+        else:
+            metadata['f_healthy'] = np.zeros(metadata.get('n_features', 28))
+            metadata['f_broken'] = np.zeros(metadata.get('n_features', 28))
+            metadata['sv_healthy_pca'] = None
+            metadata['sv_broken_pca'] = None
 
         return model, scaler, pca, label_encoder, metadata, None
 
@@ -394,17 +405,25 @@ def single_value_to_window(value, sensor_idx=0, window_size=256, fluctuation=0.0
     )
     return sig
 
-def synthesize_features_from_inputs(inputs, f_healthy, f_broken, fluctuation_pct=0.0):
+def synthesize_features_from_inputs(inputs, f_healthy, f_broken, fluctuation_pct=0.0, normal_vals=None, fault_vals=None):
     """
-    Maps 4-channel vibration inputs (a1..a4) onto the trained
-    statistical feature manifold of the SVM model with sensitivity
+    Maps multi-channel vibration inputs onto the trained
+    statistical feature manifold with sensitivity
     to multi-channel degradation and dynamic fluctuation.
     """
-    normal_vals = [1.85, 2.10, 3.20, 2.65]
-    fault_vals  = [0.04, 0.05, 0.03, 0.05]
+    if normal_vals is None:
+        normal_vals = [1.85, 2.10, 3.20, 2.65]
+    if fault_vals is None:
+        fault_vals  = [0.04, 0.05, 0.03, 0.05]
+
+    n_ch = len(inputs)
+    if len(normal_vals) < n_ch:
+        normal_vals = list(normal_vals) + [1.0] * (n_ch - len(normal_vals))
+    if len(fault_vals) < n_ch:
+        fault_vals = list(fault_vals) + [0.05] * (n_ch - len(fault_vals))
 
     h_list = []
-    for i, (v, vf, vn) in enumerate(zip(inputs, fault_vals, normal_vals)):
+    for i, (v, vf, vn) in enumerate(zip(inputs, fault_vals[:n_ch], normal_vals[:n_ch])):
         v = float(v)
         if fluctuation_pct > 0:
             jitter = np.random.uniform(-fluctuation_pct, fluctuation_pct) * abs(v)
@@ -413,20 +432,24 @@ def synthesize_features_from_inputs(inputs, f_healthy, f_broken, fluctuation_pct
         if v <= vf:
             h = 0.05
         elif v <= vn:
-            h = (v - vf) / (vn - vf)
+            h = (v - vf) / (vn - vf) if vn != vf else 0.5
         else:
-            excess = (v - vn) / vn
+            excess = (v - vn) / vn if vn != 0 else 0
             h = max(0.05, 1.0 - 0.75 * excess)
         h_list.append(h)
 
-    min_h = min(h_list)
-    avg_h = np.mean(h_list)
+    min_h = min(h_list) if h_list else 0.5
+    avg_h = float(np.mean(h_list)) if h_list else 0.5
     combined_h = 0.5 * min_h + 0.5 * avg_h
 
-    features = np.zeros(28)
-    for i in range(4):
+    total_feats = n_ch * 7
+    features = np.zeros(total_feats)
+    f_h = np.array(f_healthy) if f_healthy is not None and len(f_healthy) >= total_feats else np.ones(total_feats)
+    f_b = np.array(f_broken) if f_broken is not None and len(f_broken) >= total_feats else np.zeros(total_feats)
+
+    for i in range(n_ch):
         eff_h = 0.6 * h_list[i] + 0.4 * combined_h
-        features[i*7 : (i+1)*7] = (1 - eff_h) * f_broken[i*7 : (i+1)*7] + eff_h * f_healthy[i*7 : (i+1)*7]
+        features[i*7 : (i+1)*7] = (1 - eff_h) * f_b[i*7 : (i+1)*7] + eff_h * f_h[i*7 : (i+1)*7]
 
     return features
 
@@ -582,22 +605,26 @@ def create_pca_cluster_chart(sv_healthy_pca, sv_broken_pca, current_point=None):
     fig = go.Figure()
 
     if sv_healthy_pca is not None:
-        fig.add_trace(go.Scatter(
-            x=sv_healthy_pca[:, 0],
-            y=sv_healthy_pca[:, 1],
-            mode='markers',
-            name='Healthy Cluster (SVM SVs)',
-            marker=dict(size=6, color='rgba(22, 163, 74, 0.40)', line=dict(width=0.5, color='#15803d'))
-        ))
+        sv_h = np.array(sv_healthy_pca)
+        if len(sv_h) > 0:
+            fig.add_trace(go.Scatter(
+                x=sv_h[:, 0],
+                y=sv_h[:, 1],
+                mode='markers',
+                name='Healthy Cluster Manifold',
+                marker=dict(size=6, color='rgba(22, 163, 74, 0.40)', line=dict(width=0.5, color='#15803d'))
+            ))
 
     if sv_broken_pca is not None:
-        fig.add_trace(go.Scatter(
-            x=sv_broken_pca[:, 0],
-            y=sv_broken_pca[:, 1],
-            mode='markers',
-            name='Faulty Cluster (SVM SVs)',
-            marker=dict(size=6, color='rgba(220, 38, 38, 0.40)', line=dict(width=0.5, color='#b91c1c'))
-        ))
+        sv_b = np.array(sv_broken_pca)
+        if len(sv_b) > 0:
+            fig.add_trace(go.Scatter(
+                x=sv_b[:, 0],
+                y=sv_b[:, 1],
+                mode='markers',
+                name='Faulty Cluster Manifold',
+                marker=dict(size=6, color='rgba(220, 38, 38, 0.40)', line=dict(width=0.5, color='#b91c1c'))
+            ))
 
     if current_point is not None:
         fig.add_trace(go.Scatter(
@@ -629,11 +656,13 @@ def create_pca_cluster_chart(sv_healthy_pca, sv_broken_pca, current_point=None):
 def main():
     model, scaler, pca, label_encoder, metadata, error = load_model_components()
 
-    if error:
-        st.error(f"❌ Error loading model artifacts: {error}")
+    if error or metadata is None or model is None or scaler is None or pca is None:
+        st.error(f"❌ Error loading model artifacts: {error or 'Initialization error'}")
         st.info("💡 Please verify that trained_model.pkl, scaler.pkl, pca.pkl and model_metadata.json are present in the project folder.")
         st.stop()
         return
+
+    assert isinstance(metadata, dict)
 
     # ------------------------------------------
     # SIDEBAR: SYSTEM INFORMATION & ACTIONS
@@ -867,11 +896,19 @@ def main():
         st.plotly_chart(waveform_fig, use_container_width=True)
 
         # Real-time evaluation pipeline using trained ML model on the statistical manifold
+        normal_baselines = metadata.get('normal_vals', [1.85, 2.10, 3.20, 2.65])
+        fault_baselines  = metadata.get('fault_vals', [0.04, 0.05, 0.03, 0.05])
+
+        f_healthy = metadata.get('f_healthy', np.ones(28))
+        f_broken  = metadata.get('f_broken', np.zeros(28))
+
         features = synthesize_features_from_inputs(
             [v_a1, v_a2, v_a3, v_a4],
-            metadata['f_healthy'],
-            metadata['f_broken'],
-            fluctuation_pct=fluctuation_ratio
+            f_healthy,
+            f_broken,
+            fluctuation_pct=fluctuation_ratio,
+            normal_vals=normal_baselines,
+            fault_vals=fault_baselines
         )
 
         X_input = np.array(features).reshape(1, -1)
@@ -1121,11 +1158,20 @@ def main():
 
                         if num_windows == 0:
                             st.warning(f"⚠️ Dataset has {len(df_standard)} rows. Sliding window requires at least 256 consecutive samples.")
+                        else:
                             X_features = []
                             for i in range(num_windows):
                                 w_means = [float(np.mean(sensor_windows[s][i])) for s in required_sensors]
                                 if any(abs(m) > 0.08 for m in w_means):
-                                    feats = synthesize_features_from_inputs(w_means, metadata['f_healthy'], metadata['f_broken'])
+                                    f_h = metadata.get('f_healthy', np.ones(28))
+                                    f_b = metadata.get('f_broken', np.zeros(28))
+                                    feats = synthesize_features_from_inputs(
+                                        w_means,
+                                        f_h,
+                                        f_b,
+                                        normal_vals=metadata.get('normal_vals', [1.85, 2.10, 3.20, 2.65]),
+                                        fault_vals=metadata.get('fault_vals', [0.04, 0.05, 0.03, 0.05])
+                                    )
                                 else:
                                     feats = []
                                     for s in required_sensors:
