@@ -25,11 +25,11 @@ st.set_page_config(
 )
 
 # ==========================================
-# ULTRA-PREMIUM MODERN DARK THEME CSS
+# MINIMALIST MODERN LIGHT THEME CSS
 # ==========================================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
     /* Global Typography & Background */
     html, body, [class*="css"] {
@@ -37,30 +37,25 @@ st.markdown("""
     }
 
     .stApp {
-        background: radial-gradient(circle at 10% 10%, rgba(6, 182, 212, 0.07) 0%, transparent 40%),
-                    radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.07) 0%, transparent 40%),
-                    #0b1120;
-        color: #f8fafc;
+        background: #f8fafc;
+        color: #0f172a;
     }
 
     /* Top Header Bar */
     .hero-container {
-        background: linear-gradient(135deg, rgba(17, 27, 46, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 24px 30px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 24px 28px;
         margin-bottom: 24px;
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(12px);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
     }
 
     .hero-title {
-        font-size: 2.1rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        background: linear-gradient(90deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-size: 2rem;
+        font-weight: 750;
+        letter-spacing: -0.03em;
+        color: #0f172a;
         margin: 0;
         display: flex;
         align-items: center;
@@ -68,24 +63,25 @@ st.markdown("""
     }
 
     .hero-subtitle {
-        color: #94a3b8;
-        font-size: 1.05rem;
-        margin-top: 6px;
+        color: #64748b;
+        font-size: 1rem;
+        margin-top: 4px;
         margin-bottom: 12px;
+        font-weight: 400;
     }
 
     .status-badge-live {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: rgba(16, 185, 129, 0.15);
-        color: #34d399;
-        border: 1px solid rgba(16, 185, 129, 0.3);
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
         padding: 4px 12px;
         border-radius: 9999px;
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         font-weight: 600;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.02em;
         text-transform: uppercase;
     }
 
@@ -93,56 +89,55 @@ st.markdown("""
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: rgba(6, 182, 212, 0.12);
-        color: #38bdf8;
-        border: 1px solid rgba(6, 182, 212, 0.25);
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #e2e8f0;
         padding: 4px 12px;
         border-radius: 9999px;
-        font-size: 0.82rem;
-        font-weight: 600;
+        font-size: 0.8rem;
+        font-weight: 500;
     }
 
     /* Headings & Text High Contrast */
     h1, h2, h3, h4, h5, h6 {
-        color: #f8fafc !important;
-        font-weight: 700;
-        letter-spacing: -0.01em;
+        color: #0f172a !important;
+        font-weight: 650;
+        letter-spacing: -0.02em;
     }
 
     p, span, label {
-        color: #cbd5e1;
+        color: #475569;
     }
 
     /* Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background-color: #0d1527 !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        background-color: #ffffff !important;
+        border-right: 1px solid #e2e8f0;
     }
 
     section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {
-        color: #f8fafc !important;
+        color: #0f172a !important;
     }
 
     section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
-        color: #cbd5e1 !important;
+        color: #475569 !important;
     }
 
-    /* Glass Cards */
+    /* Minimalist Cards */
     .glass-card {
-        background: rgba(17, 27, 46, 0.65);
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 14px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
         padding: 18px 20px;
-        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
-        backdrop-filter: blur(8px);
-        transition: transform 0.2s ease, border-color 0.2s ease;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
     .glass-card:hover {
-        border-color: rgba(6, 182, 212, 0.35);
-        transform: translateY(-2px);
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06);
     }
 
     .sensor-header {
@@ -155,155 +150,163 @@ st.markdown("""
     .sensor-name {
         font-weight: 600;
         font-size: 0.95rem;
-        color: #f1f5f9;
+        color: #0f172a;
     }
 
     .sensor-tag {
         font-family: 'JetBrains Mono', monospace;
-        background: rgba(148, 163, 184, 0.12);
-        color: #94a3b8;
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
         padding: 2px 8px;
         border-radius: 6px;
         font-size: 0.75rem;
+        font-weight: 500;
     }
 
     /* Metric Overrides */
     div[data-testid="stMetric"] {
-        background: rgba(17, 27, 46, 0.75);
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
         padding: 14px 18px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
     }
 
     div[data-testid="stMetricValue"] {
         font-size: 26px !important;
         font-weight: 700 !important;
-        color: #38bdf8 !important;
+        color: #0f172a !important;
         font-family: 'JetBrains Mono', monospace;
     }
 
     div[data-testid="stMetricLabel"] {
-        color: #94a3b8 !important;
+        color: #64748b !important;
         font-weight: 500 !important;
-        font-size: 0.85rem !important;
+        font-size: 0.8rem !important;
         text-transform: uppercase;
         letter-spacing: 0.04em;
     }
 
     /* Status Result Banners */
     .result-banner-healthy {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 95, 70, 0.25) 100%);
-        border: 1px solid rgba(16, 185, 129, 0.4);
-        border-radius: 14px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 12px;
         padding: 20px 24px;
-        box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.06);
         margin-bottom: 20px;
     }
 
     .result-banner-faulty {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(153, 27, 27, 0.3) 100%);
-        border: 1px solid rgba(239, 68, 68, 0.4);
-        border-radius: 14px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 12px;
         padding: 20px 24px;
-        box-shadow: 0 0 25px rgba(239, 68, 68, 0.2);
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.06);
         margin-bottom: 20px;
     }
 
-    /* Modern Tabs */
+    /* Minimalist Segmented Tabs */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background-color: rgba(17, 27, 46, 0.6);
-        padding: 6px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        gap: 6px;
+        background-color: #f1f5f9;
+        padding: 5px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
     }
 
     .stTabs [data-baseweb="tab"] {
-        height: 42px;
-        border-radius: 8px;
-        color: #94a3b8 !important;
-        font-weight: 600;
-        font-size: 0.92rem;
-        padding: 0 18px;
-        transition: all 0.2s ease;
+        height: 38px;
+        border-radius: 6px;
+        color: #64748b !important;
+        font-weight: 500;
+        font-size: 0.9rem;
+        padding: 0 16px;
+        transition: all 0.15s ease;
     }
 
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%) !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+        background: #ffffff !important;
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
     }
 
     /* Buttons */
     div.stButton > button {
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.95rem;
-        transition: all 0.2s ease;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        font-weight: 550;
+        font-size: 0.92rem;
+        transition: all 0.15s ease;
     }
 
     div.stButton > button[kind="primary"] {
-        background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
-        border: none;
+        background: #0f172a;
+        border: 1px solid #0f172a;
         color: #ffffff;
-        box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
     }
 
     div.stButton > button[kind="primary"]:hover {
-        background: linear-gradient(135deg, #0891b2 0%, #1d4ed8 100%);
-        box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
+        background: #1e293b;
+        border-color: #1e293b;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
         transform: translateY(-1px);
     }
 
     div.stButton > button[kind="secondary"] {
-        background: rgba(30, 41, 59, 0.7);
-        color: #e2e8f0;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: #334155;
     }
 
     div.stButton > button[kind="secondary"]:hover {
-        background: rgba(51, 65, 85, 0.9);
-        border-color: rgba(6, 182, 212, 0.4);
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #0f172a;
     }
 
     /* Input widgets */
     div[data-testid="stNumberInput"] label {
-        color: #e2e8f0 !important;
+        color: #334155 !important;
         font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
     }
 
     div[data-testid="stNumberInput"] input {
-        background-color: #111b2e !important;
-        color: #38bdf8 !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
         border-radius: 8px;
         font-family: 'JetBrains Mono', monospace;
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     div[data-testid="stNumberInput"] input:focus {
-        border-color: #06b6d4 !important;
-        box-shadow: 0 0 0 1px #06b6d4 !important;
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12) !important;
     }
 
     /* Slider adjustments */
     div[data-testid="stSlider"] label {
-        color: #cbd5e1 !important;
+        color: #475569 !important;
     }
 
     /* Expanders */
     div[data-testid="stExpander"] {
-        background: rgba(17, 27, 46, 0.5) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 12px !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02) !important;
     }
 
     /* Dataframe styling */
     div[data-testid="stDataFrame"] {
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid #e2e8f0;
         border-radius: 10px;
+        background: #ffffff;
         overflow: hidden;
     }
 </style>
@@ -388,31 +391,31 @@ def extract_features(window):
     return np.nan_to_num(feats, nan=0.0, posinf=0.0, neginf=0.0)
 
 # ==========================================
-# CHART BUILDERS (PLOTLY MODERN DARK THEME)
+# CHART BUILDERS (PLOTLY MINIMALIST LIGHT THEME)
 # ==========================================
 def create_gauge_chart(value, title, is_faulty=False):
-    """Custom High-Tech Dark Neon Gauge"""
-    bar_color = "#ef4444" if is_faulty else "#10b981"
+    """Custom Minimalist Modern Precision Gauge"""
+    bar_color = "#dc2626" if is_faulty else "#16a34a"
 
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=value,
         domain={'x': [0, 1], 'y': [0, 1]},
-        title={'text': title, 'font': {'size': 18, 'color': '#f8fafc', 'family': 'Inter'}},
-        number={'suffix': "%", 'font': {'size': 44, 'color': '#ffffff', 'family': 'JetBrains Mono'}},
+        title={'text': title, 'font': {'size': 17, 'color': '#0f172a', 'family': 'Inter'}},
+        number={'suffix': "%", 'font': {'size': 42, 'color': '#0f172a', 'family': 'JetBrains Mono'}},
         gauge={
-            'axis': {'range': [0, 100], 'tickwidth': 2, 'tickcolor': "#475569"},
+            'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "#94a3b8"},
             'bar': {'color': bar_color, 'thickness': 0.28},
-            'bgcolor': "rgba(15, 23, 42, 0.7)",
-            'borderwidth': 2,
-            'bordercolor': "rgba(255, 255, 255, 0.1)",
+            'bgcolor': "#f1f5f9",
+            'borderwidth': 1,
+            'bordercolor': "#e2e8f0",
             'steps': [
-                {'range': [0, 50], 'color': 'rgba(15, 23, 42, 0.5)'},
-                {'range': [50, 75], 'color': 'rgba(6, 182, 212, 0.15)'},
-                {'range': [75, 100], 'color': 'rgba(16, 185, 129, 0.2)' if not is_faulty else 'rgba(239, 68, 68, 0.2)'}
+                {'range': [0, 50], 'color': '#f8fafc'},
+                {'range': [50, 75], 'color': '#eff6ff'},
+                {'range': [75, 100], 'color': '#f0fdf4' if not is_faulty else '#fef2f2'}
             ],
             'threshold': {
-                'line': {'color': "#38bdf8", 'width': 4},
+                'line': {'color': "#0f172a", 'width': 3},
                 'thickness': 0.78,
                 'value': value
             }
@@ -422,7 +425,7 @@ def create_gauge_chart(value, title, is_faulty=False):
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font={'color': "#f8fafc", 'family': 'Inter'},
+        font={'color': "#0f172a", 'family': 'Inter'},
         margin=dict(l=20, r=20, t=50, b=20),
         height=280
     )
@@ -436,7 +439,7 @@ def create_waveform_chart(windows):
         "Gearbox Vib (a3)",
         "Bearing Vib (a4)"
     ]
-    colors = ["#38bdf8", "#818cf8", "#f59e0b", "#34d399"]
+    colors = ["#2563eb", "#7c3aed", "#d97706", "#059669"]
 
     fig = go.Figure()
     sample_indices = np.arange(len(windows[0]))
@@ -447,25 +450,25 @@ def create_waveform_chart(windows):
             y=w,
             mode='lines',
             name=sensor_names[i],
-            line=dict(color=colors[i], width=1.7),
-            opacity=0.88
+            line=dict(color=colors[i], width=1.8),
+            opacity=0.9
         ))
 
     fig.update_layout(
-        title={'text': "⚡ 4-Channel Dynamic Vibration Waveform (256 Samples Window)", 'font': {'size': 14, 'color': '#f8fafc'}},
-        paper_bgcolor='rgba(15, 23, 42, 0.5)',
-        plot_bgcolor='rgba(11, 17, 32, 0.8)',
+        title={'text': "⚡ 4-Channel Dynamic Vibration Waveform (256 Samples Window)", 'font': {'size': 14, 'color': '#0f172a'}},
+        paper_bgcolor='#ffffff',
+        plot_bgcolor='#fafafa',
         xaxis=dict(
             title="Sample Index",
-            gridcolor='rgba(255, 255, 255, 0.06)',
-            zerolinecolor='rgba(255, 255, 255, 0.1)',
-            color='#94a3b8'
+            gridcolor='#f1f5f9',
+            zerolinecolor='#e2e8f0',
+            color='#64748b'
         ),
         yaxis=dict(
             title="Amplitude (mm/s)",
-            gridcolor='rgba(255, 255, 255, 0.06)',
-            zerolinecolor='rgba(255, 255, 255, 0.1)',
-            color='#94a3b8'
+            gridcolor='#f1f5f9',
+            zerolinecolor='#e2e8f0',
+            color='#64748b'
         ),
         legend=dict(
             orientation="h",
@@ -473,7 +476,7 @@ def create_waveform_chart(windows):
             y=1.02,
             xanchor="right",
             x=1,
-            font=dict(color='#cbd5e1', size=11)
+            font=dict(color='#475569', size=11)
         ),
         margin=dict(l=40, r=20, t=40, b=40),
         height=240
@@ -481,34 +484,34 @@ def create_waveform_chart(windows):
     return fig
 
 def create_probability_chart(probabilities, class_names):
-    """Glowing Class Probability Distribution"""
+    """Minimalist Class Probability Distribution"""
     prob_pcts = probabilities * 100
-    colors = ['#10b981' if name == "Healthy" else '#ef4444' for name in class_names]
+    colors = ['#16a34a' if name == "Healthy" else '#dc2626' for name in class_names]
 
     fig = go.Figure(go.Bar(
         x=class_names,
         y=prob_pcts,
         marker=dict(
             color=colors,
-            line=dict(color='rgba(255,255,255,0.2)', width=1.5)
+            line=dict(color='#ffffff', width=2)
         ),
         text=[f"{p:.1f}%" for p in prob_pcts],
         textposition='outside',
-        textfont=dict(color='#ffffff', size=14, family='JetBrains Mono')
+        textfont=dict(color='#0f172a', size=14, family='JetBrains Mono')
     ))
 
     fig.update_layout(
-        title={'text': "📊 Model Confidence by Condition", 'font': {'size': 15, 'color': '#f8fafc'}},
-        paper_bgcolor='rgba(15, 23, 42, 0.5)',
-        plot_bgcolor='rgba(11, 17, 32, 0.8)',
+        title={'text': "📊 Model Confidence by Condition", 'font': {'size': 15, 'color': '#0f172a'}},
+        paper_bgcolor='#ffffff',
+        plot_bgcolor='#fafafa',
         yaxis=dict(
             range=[0, 115],
             title="Probability (%)",
-            gridcolor='rgba(255, 255, 255, 0.06)',
-            color='#94a3b8'
+            gridcolor='#f1f5f9',
+            color='#64748b'
         ),
         xaxis=dict(
-            color='#f8fafc',
+            color='#0f172a',
             tickfont=dict(size=14, weight='bold')
         ),
         margin=dict(l=30, r=30, t=40, b=30),
@@ -533,20 +536,20 @@ def main():
     # ------------------------------------------
     with st.sidebar:
         st.markdown("""
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-            <div style="background: linear-gradient(135deg, #06b6d4, #3b82f6); width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+            <div style="background: #0f172a; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);">
                 ⚙️
             </div>
             <div>
-                <h3 style="margin: 0; font-size: 1.15rem; color: #f8fafc;">Diagnostic Core</h3>
-                <span style="color: #38bdf8; font-size: 0.78rem; font-weight: 600;">ACTIVE INFERENCE ENGINE</span>
+                <h3 style="margin: 0; font-size: 1.12rem; color: #0f172a;">Diagnostic Core</h3>
+                <span style="color: #2563eb; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.04em;">ACTIVE INFERENCE ENGINE</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
-        <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;">
-            <span style="color: #34d399; font-weight: 600; font-size: 0.85rem;">● ML Model Loaded & Calibrated</span>
+        <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;">
+            <span style="color: #059669; font-weight: 600; font-size: 0.84rem;">● ML Model Loaded & Calibrated</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -804,15 +807,15 @@ def main():
             if predicted_class == "Healthy":
                 st.markdown(f"""
                 <div class="result-banner-healthy">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                         <div>
-                            <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 700; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;">● NOMINAL OPERATION</span>
-                            <h2 style="margin: 6px 0 2px 0; color: #10b981 !important; font-size: 1.8rem;">Equipment Condition: HEALTHY</h2>
-                            <p style="margin: 0; color: #a7f3d0; font-size: 0.95rem;">All 4 vibration channels match normal mechanical baseline parameters. Vibration is within ISO 10816 standards.</p>
+                            <span style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 0.82rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;">● NOMINAL OPERATION</span>
+                            <h2 style="margin: 6px 0 2px 0; color: #15803d !important; font-size: 1.75rem;">Equipment Condition: HEALTHY</h2>
+                            <p style="margin: 0; color: #166534; font-size: 0.95rem;">All 4 vibration channels match normal mechanical baseline parameters. Vibration is within ISO 10816 standards.</p>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: 0.85rem; color: #a7f3d0;">DIAGNOSTIC CONFIDENCE</div>
-                            <div style="font-size: 2.2rem; font-weight: 800; color: #34d399; font-family: 'JetBrains Mono';">{confidence:.1f}%</div>
+                            <div style="font-size: 0.82rem; color: #166534; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">DIAGNOSTIC CONFIDENCE</div>
+                            <div style="font-size: 2.2rem; font-weight: 800; color: #15803d; font-family: 'JetBrains Mono';">{confidence:.1f}%</div>
                         </div>
                     </div>
                 </div>
@@ -820,15 +823,15 @@ def main():
             else:
                 st.markdown(f"""
                 <div class="result-banner-faulty">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                         <div>
-                            <span style="background: rgba(239, 68, 68, 0.25); color: #f87171; font-weight: 700; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;">🚨 ANOMALY DETECTED</span>
-                            <h2 style="margin: 6px 0 2px 0; color: #ef4444 !important; font-size: 1.8rem;">Equipment Condition: FAULTY / BROKEN</h2>
-                            <p style="margin: 0; color: #fca5a5; font-size: 0.95rem;">Vibration characteristics deviate significantly from standard profiles. Indicative of mechanical looseness, gear tooth pitting, or bearing raceway defect.</p>
+                            <span style="background: #fee2e2; color: #991b1b; font-weight: 700; font-size: 0.82rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;">🚨 ANOMALY DETECTED</span>
+                            <h2 style="margin: 6px 0 2px 0; color: #b91c1c !important; font-size: 1.75rem;">Equipment Condition: FAULTY / BROKEN</h2>
+                            <p style="margin: 0; color: #991b1b; font-size: 0.95rem;">Vibration characteristics deviate significantly from standard profiles. Indicative of mechanical looseness, gear tooth pitting, or bearing raceway defect.</p>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: 0.85rem; color: #fca5a5;">FAULT PROBABILITY</div>
-                            <div style="font-size: 2.2rem; font-weight: 800; color: #f87171; font-family: 'JetBrains Mono';">{confidence:.1f}%</div>
+                            <div style="font-size: 0.82rem; color: #991b1b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">FAULT PROBABILITY</div>
+                            <div style="font-size: 2.2rem; font-weight: 800; color: #b91c1c; font-family: 'JetBrains Mono';">{confidence:.1f}%</div>
                         </div>
                     </div>
                 </div>
@@ -856,7 +859,7 @@ def main():
             with act_col1:
                 st.markdown("""
                 <div class="glass-card">
-                    <h4 style="margin-top: 0; color: #38bdf8 !important;">📌 Action Checklist</h4>
+                    <h4 style="margin-top: 0; color: #0f172a !important;">📌 Action Checklist</h4>
                 """, unsafe_allow_html=True)
 
                 if predicted_class == "Healthy":
@@ -877,8 +880,8 @@ def main():
             with act_col2:
                 st.markdown("""
                 <div class="glass-card">
-                    <h4 style="margin-top: 0; color: #818cf8 !important;">📑 Export Report</h4>
-                    <p style="font-size: 0.88rem; color: #94a3b8;">Generate a timestamped engineering diagnostic report for maintenance ticketing.</p>
+                    <h4 style="margin-top: 0; color: #0f172a !important;">📑 Export Report</h4>
+                    <p style="font-size: 0.88rem; color: #64748b;">Generate a timestamped engineering diagnostic report for maintenance ticketing.</p>
                 """, unsafe_allow_html=True)
 
                 report_data = {
@@ -921,8 +924,8 @@ def main():
         with b_col2:
             st.markdown("""
             <div class="glass-card" style="margin-top: 24px;">
-                <h4 style="margin: 0 0 8px 0; font-size: 0.95rem;">⚡ Instant Demo Batch</h4>
-                <p style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 12px;">Test the batch processing engine with 1,000 simulated multi-channel time steps across healthy and faulty conditions.</p>
+                <h4 style="margin: 0 0 8px 0; font-size: 0.95rem; color: #0f172a;">⚡ Instant Demo Batch</h4>
+                <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 12px;">Test the batch processing engine with 1,000 simulated multi-channel time steps across healthy and faulty conditions.</p>
             """, unsafe_allow_html=True)
 
             if st.button("⚡ Generate & Run Demo Batch", use_container_width=True, type="primary"):
@@ -1053,13 +1056,13 @@ def main():
                                     names=["Healthy", "Faulty"],
                                     title="Condition Breakdown",
                                     color=["Healthy", "Faulty"],
-                                    color_discrete_map={"Healthy": "#10b981", "Faulty": "#ef4444"},
+                                    color_discrete_map={"Healthy": "#16a34a", "Faulty": "#dc2626"},
                                     hole=0.55
                                 )
                                 donut_fig.update_layout(
-                                    paper_bgcolor='rgba(15, 23, 42, 0.5)',
+                                    paper_bgcolor='#ffffff',
                                     plot_bgcolor='rgba(0,0,0,0)',
-                                    font=dict(color='#f8fafc'),
+                                    font=dict(color='#0f172a'),
                                     margin=dict(l=20, r=20, t=40, b=20),
                                     height=280
                                 )
@@ -1072,16 +1075,16 @@ def main():
                                     y="Confidence (%)",
                                     color="Condition",
                                     title="Fault Telemetry Timeline Across Windows",
-                                    color_discrete_map={"Healthy": "#10b981", "Faulty": "#ef4444"},
+                                    color_discrete_map={"Healthy": "#16a34a", "Faulty": "#dc2626"},
                                     size="Confidence (%)",
                                     size_max=10
                                 )
                                 timeline_fig.update_layout(
-                                    paper_bgcolor='rgba(15, 23, 42, 0.5)',
-                                    plot_bgcolor='rgba(11, 17, 32, 0.8)',
-                                    font=dict(color='#f8fafc'),
-                                    xaxis=dict(gridcolor='rgba(255, 255, 255, 0.06)', color='#94a3b8'),
-                                    yaxis=dict(gridcolor='rgba(255, 255, 255, 0.06)', color='#94a3b8'),
+                                    paper_bgcolor='#ffffff',
+                                    plot_bgcolor='#fafafa',
+                                    font=dict(color='#0f172a'),
+                                    xaxis=dict(gridcolor='#f1f5f9', color='#64748b'),
+                                    yaxis=dict(gridcolor='#f1f5f9', color='#64748b'),
                                     margin=dict(l=30, r=30, t=40, b=30),
                                     height=280
                                 )
@@ -1108,31 +1111,31 @@ def main():
         # Pipeline diagram
         st.markdown("""
         <div class="glass-card" style="margin-bottom: 20px;">
-            <h4 style="margin: 0 0 12px 0; color: #38bdf8 !important;">🔄 End-to-End Machine Learning Architecture</h4>
+            <h4 style="margin: 0 0 14px 0; color: #0f172a !important;">🔄 End-to-End Machine Learning Architecture</h4>
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.88rem;">
-                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 10px 14px; text-align: center;">
-                    <div style="color: #38bdf8; font-weight: 700;">1. Raw Signal</div>
-                    <div style="color: #94a3b8; font-size: 0.78rem;">4 Sensors × 256 Samples</div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
+                    <div style="color: #2563eb; font-weight: 700;">1. Raw Signal</div>
+                    <div style="color: #64748b; font-size: 0.78rem;">4 Sensors × 256 Samples</div>
                 </div>
-                <div style="color: #64748b; font-size: 1.2rem;">➔</div>
-                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(129, 140, 248, 0.3); border-radius: 8px; padding: 10px 14px; text-align: center;">
-                    <div style="color: #818cf8; font-weight: 700;">2. Feature Extraction</div>
-                    <div style="color: #94a3b8; font-size: 0.78rem;">Mean, Std, RMS, Min, Max, Skew, Kurt</div>
+                <div style="color: #cbd5e1; font-size: 1.2rem;">➔</div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
+                    <div style="color: #4f46e5; font-weight: 700;">2. Feature Extraction</div>
+                    <div style="color: #64748b; font-size: 0.78rem;">Mean, Std, RMS, Min, Max, Skew, Kurt</div>
                 </div>
-                <div style="color: #64748b; font-size: 1.2rem;">➔</div>
-                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(192, 132, 252, 0.3); border-radius: 8px; padding: 10px 14px; text-align: center;">
-                    <div style="color: #c084fc; font-weight: 700;">3. StandardScaler</div>
-                    <div style="color: #94a3b8; font-size: 0.78rem;">Zero Mean & Unit Variance (28D)</div>
+                <div style="color: #cbd5e1; font-size: 1.2rem;">➔</div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
+                    <div style="color: #7c3aed; font-weight: 700;">3. StandardScaler</div>
+                    <div style="color: #64748b; font-size: 0.78rem;">Zero Mean & Unit Variance (28D)</div>
                 </div>
-                <div style="color: #64748b; font-size: 1.2rem;">➔</div>
-                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 8px; padding: 10px 14px; text-align: center;">
-                    <div style="color: #f472b6; font-weight: 700;">4. PCA Reduction</div>
-                    <div style="color: #94a3b8; font-size: 0.78rem;">14 Principal Components (95% Var)</div>
+                <div style="color: #cbd5e1; font-size: 1.2rem;">➔</div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
+                    <div style="color: #db2777; font-weight: 700;">4. PCA Reduction</div>
+                    <div style="color: #64748b; font-size: 0.78rem;">14 Principal Components (95% Var)</div>
                 </div>
-                <div style="color: #64748b; font-size: 1.2rem;">➔</div>
-                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 8px; padding: 10px 14px; text-align: center;">
-                    <div style="color: #34d399; font-weight: 700;">5. SVM RBF Classifier</div>
-                    <div style="color: #94a3b8; font-size: 0.78rem;">Probabilistic Classification</div>
+                <div style="color: #cbd5e1; font-size: 1.2rem;">➔</div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; text-align: center;">
+                    <div style="color: #059669; font-weight: 700;">5. SVM RBF Classifier</div>
+                    <div style="color: #64748b; font-size: 0.78rem;">Probabilistic Classification</div>
                 </div>
             </div>
         </div>
@@ -1148,24 +1151,24 @@ def main():
             x=pc_labels,
             y=exp_var,
             name="Individual Variance (%)",
-            marker_color="#06b6d4"
+            marker_color="#2563eb"
         ))
         scree_fig.add_trace(go.Scatter(
             x=pc_labels,
             y=cum_var,
             name="Cumulative Variance (%)",
             mode="lines+markers",
-            line=dict(color="#f59e0b", width=2.5),
+            line=dict(color="#d97706", width=2.5),
             marker=dict(size=7)
         ))
 
         scree_fig.update_layout(
-            title={'text': "📉 PCA Scree Plot (Explained Variance Ratio)", 'font': {'size': 16, 'color': '#f8fafc'}},
-            paper_bgcolor='rgba(15, 23, 42, 0.5)',
-            plot_bgcolor='rgba(11, 17, 32, 0.8)',
-            xaxis=dict(title="Principal Component", gridcolor='rgba(255, 255, 255, 0.06)', color='#94a3b8'),
-            yaxis=dict(title="Variance Explained (%)", gridcolor='rgba(255, 255, 255, 0.06)', color='#94a3b8'),
-            legend=dict(font=dict(color='#cbd5e1')),
+            title={'text': "📉 PCA Scree Plot (Explained Variance Ratio)", 'font': {'size': 16, 'color': '#0f172a'}},
+            paper_bgcolor='#ffffff',
+            plot_bgcolor='#fafafa',
+            xaxis=dict(title="Principal Component", gridcolor='#f1f5f9', color='#64748b'),
+            yaxis=dict(title="Variance Explained (%)", gridcolor='#f1f5f9', color='#64748b'),
+            legend=dict(font=dict(color='#475569')),
             margin=dict(l=30, r=30, t=50, b=30),
             height=340
         )
@@ -1223,16 +1226,16 @@ def main():
                 color="predicted_class",
                 title="Confidence Levels Across Session Inferences",
                 labels={"x": "Inference #", "confidence": "Confidence (%)"},
-                color_discrete_map={"Healthy": "#10b981", "Faulty": "#ef4444"},
+                color_discrete_map={"Healthy": "#16a34a", "Faulty": "#dc2626"},
                 size="confidence",
                 size_max=12
             )
             hist_fig.update_layout(
-                paper_bgcolor='rgba(15, 23, 42, 0.5)',
-                plot_bgcolor='rgba(11, 17, 32, 0.8)',
-                font=dict(color='#f8fafc'),
-                xaxis=dict(gridcolor='rgba(255, 255, 255, 0.06)', color='#94a3b8'),
-                yaxis=dict(gridcolor='rgba(255, 255, 255, 0.06)', color='#94a3b8'),
+                paper_bgcolor='#ffffff',
+                plot_bgcolor='#fafafa',
+                font=dict(color='#0f172a'),
+                xaxis=dict(gridcolor='#f1f5f9', color='#64748b'),
+                yaxis=dict(gridcolor='#f1f5f9', color='#64748b'),
                 margin=dict(l=30, r=30, t=40, b=30),
                 height=280
             )
